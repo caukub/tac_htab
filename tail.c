@@ -1,5 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
+void print_error(const char *fmt, ...) {
+    va_list args;
+
+    fprintf(stderr, "Error: ");
+
+    va_start(args, fmt);
+
+    vfprintf(stderr, fmt, args);
+
+    va_end(args);
+}
 
 #define LINE_LENGTH_LIMIT 4096
 
@@ -13,7 +26,19 @@ typedef struct {
 // size = lines
 CircBuffer* cbuf_create(size_t size) {
   CircBuffer *buffer = malloc(sizeof(CircBuffer));
+
+  if (buffer == NULL) {
+    print_error("Memory allocation for '*buffer' failed");
+    return NULL;
+  }
+
   buffer->lines = malloc(LINE_LENGTH_LIMIT * size);
+
+  if (buffer->lines == NULL) {
+    print_error("Memory allocation for 'buffer->lines' failed");
+    free(buffer);
+    return NULL;
+  }
 
   return buffer;
 }
@@ -36,7 +61,7 @@ int main(const int argc, char *argv[]) {
     
     char line[LINE_LENGTH_LIMIT];
 
-    while (fgets(line, sizeof(line), stdio)) {
+    while (fgets(line, sizeof(line), stdin)) {
       printf("%s", line);
     }
   } else if (argc == 2) {
@@ -45,7 +70,7 @@ int main(const int argc, char *argv[]) {
     file = fopen(file_name, "r");
 
     if (file == NULL) {
-      fprintf(stderr, "File couldn't be opened");
+      print_error("File '%s' couldn't be opened", file_name);
       return 1;
     }
 
@@ -58,7 +83,7 @@ int main(const int argc, char *argv[]) {
     fclose(file);
 
   } else {
-    fprintf(stderr, "Invalid number of arguments!");
+    print_error("Invalid number of arguments!");
     return 1;
   }
 }

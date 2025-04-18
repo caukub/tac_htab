@@ -3,32 +3,42 @@
 
 #define LINE_LENGTH_LIMIT 4096
 
-struct CircBuffer {
-  
-};
+typedef struct {
+    char **lines;
+    size_t size;
+    size_t read_idx;
+    size_t write_idx;
+} CircBuffer;
 
 // size = lines
-struct CircBuffer* cbuf_create(size_t size) {
-  struct CircBuffer *buffer;
+CircBuffer* cbuf_create(size_t size) {
+  CircBuffer *buffer = malloc(sizeof(CircBuffer));
+  buffer->lines = malloc(LINE_LENGTH_LIMIT * size);
 
   return buffer;
 }
 
-void cbuf_put(struct CircBuffer *buffer, const char *line) {
+void cbuf_put(CircBuffer *buffer, const char *line) {
 
 }
 
-char* cbuf_get(struct CircBuffer *buffer) {
+char* cbuf_get(CircBuffer *buffer) {
 
 }
 
-void cbuf_free(struct CircBuffer *buffer) {
+void cbuf_free(CircBuffer *buffer) {
+  free(buffer->lines);
   free(buffer);
 }
 
 int main(const int argc, char *argv[]) {
   if (argc == 1) {
-    // read from stdio
+    
+    char line[LINE_LENGTH_LIMIT];
+
+    while (fgets(line, sizeof(line), stdio)) {
+      printf("%s", line);
+    }
   } else if (argc == 2) {
     FILE *file;
     const char *file_name = argv[1];

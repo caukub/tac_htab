@@ -25,7 +25,7 @@ void print_error(const char * fmt, ...) {
 #define LINE_LENGTH_LIMIT 4096
 
 typedef struct {
-  char ** lines;
+  char **lines;
   size_t size;
   size_t read_idx;
   size_t write_idx;

@@ -1,38 +1,53 @@
 #include <stdio.h>
+
 #include <stdlib.h>
+
 #include <stdarg.h>
 
-void print_error(const char *fmt, ...) {
-    va_list args;
+#include <stdbool.h>
 
-    fprintf(stderr, "Error: ");
+#include <string.h>
 
-    va_start(args, fmt);
+#include <assert.h>
 
-    vfprintf(stderr, fmt, args);
+void print_error(const char * fmt, ...) {
+  va_list args;
 
-    va_end(args);
+  fprintf(stderr, "Error: ");
+
+  va_start(args, fmt);
+
+  vfprintf(stderr, fmt, args);
+
+  va_end(args);
 }
 
 #define LINE_LENGTH_LIMIT 4096
 
 typedef struct {
-    char **lines;
-    size_t size;
-    size_t read_idx;
-    size_t write_idx;
-} CircBuffer;
+  char ** lines;
+  size_t size;
+  size_t read_idx;
+  size_t write_idx;
+  bool is_full;
+}
+CircBuffer;
 
-// size = lines
-CircBuffer* cbuf_create(size_t size) {
-  CircBuffer *buffer = malloc(sizeof(CircBuffer));
+CircBuffer * cbuf_create(size_t size) {
+  assert(size > 0);
+  CircBuffer * buffer = malloc(sizeof(CircBuffer));
 
   if (buffer == NULL) {
     print_error("Memory allocation for '*buffer' failed");
     return NULL;
   }
 
-  buffer->lines = malloc(LINE_LENGTH_LIMIT * size);
+  buffer->read_idx = 0;
+  buffer->write_idx = 0;
+  buffer->size = size;
+  buffer->is_full = false;
+
+  buffer->lines = malloc(sizeof(char * ) * size);
 
   if (buffer->lines == NULL) {
     print_error("Memory allocation for 'buffer->lines' failed");
@@ -43,24 +58,80 @@ CircBuffer* cbuf_create(size_t size) {
   return buffer;
 }
 
-void cbuf_put(CircBuffer *buffer, const char *line) {
+void cbuf_put(CircBuffer * buffer, const char * line) {
 
+  if (buffer->lines[buffer->write_idx] != NULL) {
+    free(buffer->lines[buffer->write_idx]);
+  }
+
+  buffer->lines[buffer->write_idx] = strdup(line);
+  if (!buffer->lines[buffer->write_idx]) {
+    print_error("Chyba při alokaci paměti pro řádek");
+    return;
+  }
+
+  if (buffer->is_full) {
+    buffer->read_idx = (buffer->read_idx + 1) % buffer->size;
+  }
+
+  buffer->write_idx = (buffer->write_idx + 1) % buffer->size;
+
+  if (buffer->write_idx == buffer->read_idx) {
+    buffer->is_full = 1;
+  }
 }
 
-char* cbuf_get(CircBuffer *buffer) {
-
-}
-
-void cbuf_free(CircBuffer *buffer) {
+void cbuf_free(CircBuffer * buffer) {
   free(buffer->lines);
   free(buffer);
 }
 
-int main(const int argc, char *argv[]) {
-  if (argc == 1) {
-    
-    char line[LINE_LENGTH_LIMIT];
+char * cbuf_get(CircBuffer * buffer, int index) {
+  if (buffer->read_idx == buffer->write_idx && !buffer->is_full) {
+    return NULL;
+  }
 
+  size_t count = buffer->is_full ? buffer->size : buffer->write_idx - buffer->read_idx;
+
+  if (count < 0) {
+    count += buffer->size;
+  }
+
+  if (index < 0 || index >= count) {
+    return NULL;
+  }
+
+  size_t real_idx = (buffer->read_idx + index) % buffer->size;
+
+  return buffer->lines[real_idx];
+}
+
+int get_line_count(CircBuffer * buffer) {
+  if (buffer->read_idx == buffer->write_idx) {
+    return buffer->is_full ? buffer->size : 0;
+  }
+
+  if (buffer->write_idx > buffer->read_idx) {
+    return buffer->write_idx - buffer->read_idx;
+  } else {
+    return buffer->size - buffer->read_idx + buffer->write_idx;
+  }
+}
+
+int main(const int argc, char *argv[]) {
+  char line[LINE_LENGTH_LIMIT];
+
+  size_t lines_to_print = 0;
+
+  if (true) {
+    lines_to_print = 10;
+  } else {
+    lines_to_print = 10;
+  }
+
+  CircBuffer *buffer = cbuf_create(lines_to_print);
+
+  if (argc == 1) {
     while (fgets(line, sizeof(line), stdin)) {
       printf("%s", line);
     }
@@ -73,8 +144,6 @@ int main(const int argc, char *argv[]) {
       print_error("File '%s' couldn't be opened", file_name);
       return 1;
     }
-
-    char line[LINE_LENGTH_LIMIT];
 
     while (fgets(line, sizeof(line), file)) {
       printf("%s", line);

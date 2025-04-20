@@ -33,9 +33,9 @@ typedef struct {
 }
 CircBuffer;
 
-CircBuffer * cbuf_create(size_t size) {
+CircBuffer* cbuf_create(size_t size) {
   assert(size > 0);
-  CircBuffer * buffer = malloc(sizeof(CircBuffer));
+  CircBuffer *buffer = malloc(sizeof(CircBuffer));
 
   if (buffer == NULL) {
     print_error("Memory allocation for '*buffer' failed");
@@ -47,7 +47,7 @@ CircBuffer * cbuf_create(size_t size) {
   buffer->size = size;
   buffer->is_full = false;
 
-  buffer->lines = malloc(sizeof(char * ) * size);
+  buffer->lines = malloc(sizeof(char*) * size);
 
   if (buffer->lines == NULL) {
     print_error("Memory allocation for 'buffer->lines' failed");
@@ -59,7 +59,6 @@ CircBuffer * cbuf_create(size_t size) {
 }
 
 void cbuf_put(CircBuffer * buffer, const char * line) {
-
   if (buffer->lines[buffer->write_idx] != NULL) {
     free(buffer->lines[buffer->write_idx]);
   }
@@ -86,7 +85,7 @@ void cbuf_free(CircBuffer * buffer) {
   free(buffer);
 }
 
-char * cbuf_get(CircBuffer * buffer, int index) {
+char* cbuf_get(CircBuffer * buffer, int index) {
   if (buffer->read_idx == buffer->write_idx && !buffer->is_full) {
     return NULL;
   }
@@ -106,7 +105,7 @@ char * cbuf_get(CircBuffer * buffer, int index) {
   return buffer->lines[real_idx];
 }
 
-int get_line_count(CircBuffer * buffer) {
+size_t get_line_count(CircBuffer * buffer) {
   if (buffer->read_idx == buffer->write_idx) {
     return buffer->is_full ? buffer->size : 0;
   }
@@ -124,16 +123,24 @@ int main(const int argc, char *argv[]) {
   size_t lines_to_print = 0;
 
   if (true) {
-    lines_to_print = 10;
+    lines_to_print = 0;
   } else {
-    lines_to_print = 10;
+    lines_to_print = 0;
+  }
+
+  if (lines_to_print == 0) {
+    return 0;
   }
 
   CircBuffer *buffer = cbuf_create(lines_to_print);
 
+  if (buffer == NULL) {
+    print_error("Buffer '*buffer' couldn't be allocated");
+  }
+
   if (argc == 1) {
     while (fgets(line, sizeof(line), stdin)) {
-      printf("%s", line);
+      cbuf_put(buffer, line);
     }
   } else if (argc == 2) {
     FILE *file;
@@ -146,7 +153,7 @@ int main(const int argc, char *argv[]) {
     }
 
     while (fgets(line, sizeof(line), file)) {
-      printf("%s", line);
+      cbuf_put(buffer, line);
     }
 
     fclose(file);
@@ -155,4 +162,15 @@ int main(const int argc, char *argv[]) {
     print_error("Invalid number of arguments!");
     return 1;
   }
+
+  size_t line_count = get_line_count(buffer);
+
+  for (size_t idx = 0; idx < line_count; ++idx) {
+    char *current_line = cbuf_get(buffer, idx);
+    if (current_line) {
+      printf("%s", current_line);
+    }
+  }
+
+  cbuf_free(buffer);
 }

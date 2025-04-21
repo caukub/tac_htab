@@ -12,7 +12,7 @@ htab_t* htab_init(size_t n) {
     hash_table->size = 0;
     hash_table->arr_size = n;
 
-    for (size_t idx = 0; i < n; ++idx) {
+    for (size_t idx = 0; idx < n; ++idx) {
         hash_table->buckets[idx] = NULL;
     }
 

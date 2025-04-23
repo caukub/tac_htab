@@ -1,4 +1,9 @@
+#include <stdlib.h>
+#include <string.h>
+
 #include "htab.h"
+#include "htab_t.c"
+#include "htab_item_t.c"
 
 htab_pair_t* htab_lookup_add(htab_t *t, htab_key_t key) {
     size_t hash = htab_hash_function(key);
@@ -9,9 +14,30 @@ htab_pair_t* htab_lookup_add(htab_t *t, htab_key_t key) {
     htab_item_t *current_item = bucket_ptr;
 
     while (current_item != NULL) {
-        if (strcmp(bucket_ptr->pair.key, key) == 0) {
+        if (strcmp(current_item->pair.key, key) == 0) {
             return &(current_item->pair);
         }
         current_item = current_item->next;
     }
+
+    htab_item_t *new_item = malloc(sizeof(htab_item_t));
+
+    if (new_item == NULL) {
+        return NULL;
+    }
+
+    new_item->pair.key = strdup(key);
+    
+    if (new_item->pair.key == NULL) {
+        free(new_item);
+        return NULL;
+    }
+    new_item->pair.value = 0;
+    
+    new_item->next = t->buckets[bucket_idx];
+    t->buckets[bucket_idx] = new_item;
+
+    t->size += 1;
+
+    return &(new_item->pair);
 }

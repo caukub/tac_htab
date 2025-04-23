@@ -1,5 +1,4 @@
 #include "htab.h"
-#include "htab_item_t"
 
 typedef struct htab {
     size_t size;

@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "htab.h"
-#include "htab_t.c"
-#include "htab_item_t.c"
+#include "htab_t.h"
 
 htab_pair_t* htab_lookup_add(htab_t *t, htab_key_t key) {
     size_t hash = htab_hash_function(key);
@@ -27,7 +27,7 @@ htab_pair_t* htab_lookup_add(htab_t *t, htab_key_t key) {
     }
 
     new_item->pair.key = strdup(key);
-    
+
     if (new_item->pair.key == NULL) {
         free(new_item);
         return NULL;

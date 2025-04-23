@@ -1,0 +1,16 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     a.out
+relocations:
+  - { offset: 0x26, size: 0x8, addend: 0x0, symName: _htab_bucket_count, symObjAddr: 0x0, symBinAddr: 0x100003AB8, symSize: 0x18 }
+  - { offset: 0x33, size: 0x8, addend: 0x0, symName: _htab_bucket_count, symObjAddr: 0x0, symBinAddr: 0x100003AB8, symSize: 0x18 }
+  - { offset: 0x182, size: 0x8, addend: 0x0, symName: _htab_hash_function, symObjAddr: 0x0, symBinAddr: 0x100003AD0, symSize: 0x74 }
+  - { offset: 0x1A0, size: 0x8, addend: 0x0, symName: _htab_hash_function, symObjAddr: 0x0, symBinAddr: 0x100003AD0, symSize: 0x74 }
+  - { offset: 0x24A, size: 0x8, addend: 0x0, symName: _htab_init, symObjAddr: 0x0, symBinAddr: 0x100003B44, symSize: 0xB8 }
+  - { offset: 0x257, size: 0x8, addend: 0x0, symName: _htab_init, symObjAddr: 0x0, symBinAddr: 0x100003B44, symSize: 0xB8 }
+  - { offset: 0x3DB, size: 0x8, addend: 0x0, symName: _htab_lookup_add, symObjAddr: 0x0, symBinAddr: 0x100003BFC, symSize: 0x174 }
+  - { offset: 0x3E8, size: 0x8, addend: 0x0, symName: _htab_lookup_add, symObjAddr: 0x0, symBinAddr: 0x100003BFC, symSize: 0x174 }
+  - { offset: 0x58B, size: 0x8, addend: 0x0, symName: _add, symObjAddr: 0x0, symBinAddr: 0x100003D70, symSize: 0x40 }
+  - { offset: 0x5A7, size: 0x8, addend: 0x0, symName: _add, symObjAddr: 0x0, symBinAddr: 0x100003D70, symSize: 0x40 }
+  - { offset: 0x5E7, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x40, symBinAddr: 0x100003DB0, symSize: 0x13C }
+...

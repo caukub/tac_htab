@@ -1,12 +1,13 @@
 #include <stdlib.h>
 
 #include "htab.h"
+#include "htab_t.h"
 
 htab_t* htab_init(size_t n) {
-    htab_t *hash_table = malloc(sizeof(htab_t) + (n * sizeof(htab_item_t*)));
+    htab_t *hash_table = malloc(sizeof(htab_t) + n * sizeof(htab_item_t*));
 
     if (hash_table == NULL) {
-        //print err
+        // print err
         return NULL;
     }
 

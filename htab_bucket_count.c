@@ -1,5 +1,5 @@
-#include "htab_t.c"
+#include "htab_t.h"
 
 size_t htab_bucket_count(const htab_t *t) {
-    t->arr_size;
+    return t->arr_size;
 }

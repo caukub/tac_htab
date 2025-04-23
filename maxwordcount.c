@@ -28,4 +28,6 @@ int main(const int argc, const char *argv[]) {
 
     htab_pair_t *pair = htab_lookup_add(hash_table, "all");
     printf("%d\n", pair->value);
+
+    htab_free(hash_table);
 }

@@ -1,3 +1,5 @@
+#include "htab_t.h"
+
 void htab_clear(htab_t *t) {
     
 }

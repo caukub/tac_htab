@@ -25,4 +25,4 @@ io.o: io.c
 # all, phony
 
 clean:
-  rm -rf *.o *.so *.a wordcount wordcount-dynamic tail
+  rm -rf *.o *.so *.a maxwordcount maxwordcount-dynamic tail

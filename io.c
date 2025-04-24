@@ -12,6 +12,7 @@ int read_word(unsigned max, char s[max], FILE *f) {
         return EOF;
     }
 
+    // TODO - prepsat na do while (funkcne v poradku ale nehezke)
     while ((ch = getc(f)) != EOF && !isspace(ch)) {
         if (word_length < max - 1) {
             s[word_length] = ch;

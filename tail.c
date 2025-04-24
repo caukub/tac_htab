@@ -170,7 +170,7 @@ int main(const int argc, char *argv[]) {
       size_t length = strlen(line);
       if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
       if (!long_line_warned) {
-        fprintf(stderr, "Warning: A line exceeded the maximum allowed length (%d chars) and was truncated.\n", LINE_LENGTH_LIMIT - 1);
+        print_error("A line exceeded the maximum allowed length (%d chars), remaining of the line is not printed\n", LINE_LENGTH_LIMIT - 1);
         long_line_warned = 1;
       }
 
@@ -195,7 +195,7 @@ int main(const int argc, char *argv[]) {
 
     if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
       if (!long_line_warned) {
-        fprintf(stderr, "Warning: A line exceeded the maximum allowed length (%d chars) and was truncated.\n", LINE_LENGTH_LIMIT - 1);
+        print_error("A line exceeded the maximum allowed length (%d chars), remaining of the line is not printed\n", LINE_LENGTH_LIMIT - 1);
         long_line_warned = 1;
       }
 

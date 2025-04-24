@@ -1,7 +1,9 @@
 #include <stdio.h>
-#include "htab.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-#include <stdio.h>
+#include "htab.h"
 
 #define HASH_TABLE_SIZE 30000
 
@@ -19,7 +21,7 @@ void print_max_words(htab_pair_t *pair) {
     }
 }
 
-void add(htab_t *hash_table, htab_key_t key) {
+void add_word(htab_t *hash_table, htab_key_t key) {
     htab_pair_t *pair = htab_lookup_add(hash_table, key);
     pair->value += 1;
 }
@@ -27,20 +29,27 @@ void add(htab_t *hash_table, htab_key_t key) {
 int main(const int argc, const char *argv[]) {
     htab_t *hash_table = htab_init(HASH_TABLE_SIZE);
 
-    FILE *file = fopen("ahoj.txt", "r");
-
-    if (file == NULL) {
-        printf("Chyba při otevírání souboru!\n");
-        return 1;
-    }
-
     char word[256];
+    int c, i = 0;
 
-    while (fscanf(file, "%s", word) == 1) {
-        add(hash_table, word);
+    while ((c = getchar()) != EOF) {
+        if (isspace(c)) {
+            if (i > 0) {
+                word[i] = '\0';
+                add_word(hash_table, word);
+                i = 0;
+            }
+        } else {
+            if (i < 256 - 1) {
+                word[i++] = (char)c;
+            }
+        }
     }
 
-    fclose(file);
+    if (i > 0) {
+        word[i] = '\0';
+        add_word(hash_table, word);
+    }
 
     htab_for_each(hash_table, &calc_max_words);
     htab_for_each(hash_table, &print_max_words);

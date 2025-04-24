@@ -8,19 +8,19 @@ CFLAGS = -Wall
 LDFLAGS = 
 LDFLAGS_DYNAMIC_LIBRARY = -shared
 
+-O2
+
 LD_LIBRARY_PATH="."
 
 all:
 
 tail:
 
-maxwordcount:
+maxwordcount: libhtab.a
 
 maxwordcount-dynamic:
 
-maxwordcount-dynamic:
-
-libhtab.a:
+libhtab.a: htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
 
 libhtab.so:
 
@@ -30,34 +30,37 @@ clean:
   rm -rf *.o *.so *.a maxwordcount maxwordcount-dynamic tail
 
 htab_bucket_count.o: htab_bucket_count.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_clear.o: htab_clear.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_erase.o: htab_erase.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_find.o: htab_find.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_for_each.o: htab_for_each.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_free.o: htab_free.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_hash_function.o: htab_hash_function.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_init.o: htab_init.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_lookup_add.o: htab_lookup_add.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
 
 htab_size.o: htab_size.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@
+
+tail.o: tail.c
+	$(CC) -c $^ -o $@
 
 io.o: io.c
-	gcc -c $^ -o $@
+	$(CC) -c $^ -o $@

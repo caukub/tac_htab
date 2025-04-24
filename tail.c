@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-void print_error(const char * fmt, ...) {
+void print_error(const char *fmt, ...) {
   va_list args;
 
   fprintf(stderr, "Error: ");
@@ -26,11 +26,11 @@ typedef struct {
   size_t read_idx;
   size_t write_idx;
   bool is_full;
-}
-CircBuffer;
+} CircBuffer;
 
 CircBuffer* cbuf_create(size_t size) {
   assert(size > 0);
+
   CircBuffer *buffer = malloc(sizeof(CircBuffer));
 
   if (buffer == NULL) {
@@ -54,14 +54,14 @@ CircBuffer* cbuf_create(size_t size) {
   return buffer;
 }
 
-void cbuf_put(CircBuffer * buffer, const char * line) {
+void cbuf_put(CircBuffer *buffer, const char *line) {
   if (buffer->lines[buffer->write_idx] != NULL) {
     free(buffer->lines[buffer->write_idx]);
   }
 
   buffer->lines[buffer->write_idx] = strdup(line);
   if (!buffer->lines[buffer->write_idx]) {
-    print_error("Chyba při alokaci paměti pro řádek");
+    print_error("Error occured while allocating memory for new line");
     return;
   }
 
@@ -76,12 +76,18 @@ void cbuf_put(CircBuffer * buffer, const char * line) {
   }
 }
 
-void cbuf_free(CircBuffer * buffer) {
-  free(buffer->lines);
+void cbuf_free(CircBuffer *buffer) {
+  if (buffer->lines) {
+    for (size_t idx = 0; idx < buffer->size; ++idx) {
+      free(buffer->lines[idx]);
+    }
+    free(buffer->lines);
+  }
+
   free(buffer);
 }
 
-char* cbuf_get(CircBuffer * buffer, int index) {
+char* cbuf_get(CircBuffer *buffer, int index) {
   if (buffer->read_idx == buffer->write_idx && !buffer->is_full) {
     return NULL;
   }
@@ -116,15 +122,25 @@ size_t get_line_count(CircBuffer * buffer) {
 int main(const int argc, char *argv[]) {
   int opt;
 
-  size_t lines_to_print = 20;
+  size_t lines_to_print = 10;
 
   while ((opt = getopt(argc, argv, "n:")) != -1) {
     switch(opt) {
-      case 'n':
-        lines_to_print = strtol(optarg, NULL, 10);
+      case 'n': {
+        char *endptr;
+
+        lines_to_print = strtol(optarg, &endptr, 10);
+
+        if (*endptr != '\0') {
+          print_error("Value of -n is not a valid number\n");
+          exit(1);
+        }
+
         break;
+      }
       case '?':
         print_error("Invalid switch '%s' has been provided\n", optarg);
+        exit(1);
         break;
     }
   }
@@ -135,7 +151,9 @@ int main(const int argc, char *argv[]) {
     file_name = argv[optind];
   }
 
-  char line[LINE_LENGTH_LIMIT];
+  if (lines_to_print == 0) {
+    return 0;
+  }
 
   CircBuffer *buffer = cbuf_create(lines_to_print);
 
@@ -143,8 +161,13 @@ int main(const int argc, char *argv[]) {
     print_error("Buffer '*buffer' couldn't be allocated");
   }
 
+  char line[LINE_LENGTH_LIMIT];
+
   if (file_name == NULL) { // stdin
     while (fgets(line, sizeof(line), stdin)) {
+      if (!limit_reached && strlen(line) == LINE_LENGTH_LIMIT - 1 && line[LINE_LENGTH_LIMIT - 2] != '\n') {
+        print_error("Line exceeded maximum length of %d characters\n", LINE_LENGTH_LIMIT - 1);
+      }
       cbuf_put(buffer, line);
     }
   } else { // soubor

@@ -167,18 +167,18 @@ int main(const int argc, char *argv[]) {
     bool long_line_warned = false;
 
     while (fgets(line, sizeof(line), stdin)) {
-      size_t len = strlen(line);
-
       size_t length = strlen(line);
-      if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n' && !long_line_warned) {
-        print_error("chybicka\n");
-        long_line_warned = true;
+      if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
+      if (!long_line_warned) {
+        fprintf(stderr, "Warning: A line exceeded the maximum allowed length (%d chars) and was truncated.\n", LINE_LENGTH_LIMIT - 1);
+        long_line_warned = 1;
       }
 
       int ch;
       while ((ch = fgetc(stdin)) != '\n' && ch != EOF);
+    }
 
-      cbuf_put(buffer, line);
+    cbuf_put(buffer, line);
     }
   } else { // soubor
     FILE *file = fopen(file_name, "r");
@@ -192,16 +192,19 @@ int main(const int argc, char *argv[]) {
 
     while (fgets(line, sizeof(line), file)) {
       size_t length = strlen(line);
-      if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n' && !long_line_warned) {
-        print_error("chybicka\n");
-        long_line_warned = true;
+
+    if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
+      if (!long_line_warned) {
+        fprintf(stderr, "Warning: A line exceeded the maximum allowed length (%d chars) and was truncated.\n", LINE_LENGTH_LIMIT - 1);
+        long_line_warned = 1;
       }
 
       int ch;
       while ((ch = fgetc(file)) != '\n' && ch != EOF);
-
-      cbuf_put(buffer, line);
     }
+
+    cbuf_put(buffer, line);
+  }
 
     fclose(file);
   }

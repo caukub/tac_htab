@@ -1,3 +1,3 @@
-gcc -O2 -o maxwordcount htab_bucket_count.c htab_hash_function.c htab_init.c htab_for_each.c htab_lookup_add.c htab_clear.c htab_free.c maxwordcount.c
+gcc -O2 -o maxwordcount htab_bucket_count.c htab_hash_function.c htab_init.c htab_for_each.c htab_lookup_add.c htab_clear.c htab_free.c maxwordcount.c io.c
 
-gcc -O2 -o io io.c
+gcc -O2 -o tail tail.c

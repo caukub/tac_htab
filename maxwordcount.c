@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "htab.h"
-#include <ctype.h>
+#include "io.h"
 
 /*
 Počet bucketů v hashtablu by v ideálním případě neměl být nižší než počet ukládaných položek
-Z hlediska efektivity (rychlosti) je vhodné aby počet bucketů byla mocnina 2
-Vzhledem k očekávané velikosti testovaných dat jsem vybral hashtable o
-velikosti ~32 000 bucketů
+Také je z hlediska efektivity (resp. rychlosti) vhodné, aby počet bucketů bylo číslo které je mocnina dvou
+Vzhledem k očekávané velikosti testovaných dat jsem vybral hashtable o velikosti ~32 000 bucketů
 */
 #define HASH_TABLE_SIZE 32768
 
@@ -46,25 +46,11 @@ int main(const int argc, const char *argv[]) {
         exit(1);
     }
 
-    char word[256];
-    int c, i = 0;
+    #define LINE_LIMIT 256
 
-    while ((c = getchar()) != EOF) {
-        if (isspace(c)) {
-            if (i > 0) {
-                word[i] = '\0';
-                add_word(hash_table, word);
-                i = 0;
-            }
-        } else {
-            if (i < 256 - 1) {
-                word[i++] = (char)c;
-            }
-        }
-    }
+    char word[LINE_LIMIT];
 
-    if (i > 0) {
-        word[i] = '\0';
+    while (read_word(LINE_LIMIT, word, stdin) != EOF) {
         add_word(hash_table, word);
     }
 

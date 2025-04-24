@@ -1,13 +1,9 @@
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <stdarg.h>
-
 #include <stdbool.h>
-
 #include <string.h>
-
+#include <unistd.h>
 #include <assert.h>
 
 void print_error(const char * fmt, ...) {
@@ -118,19 +114,28 @@ size_t get_line_count(CircBuffer * buffer) {
 }
 
 int main(const int argc, char *argv[]) {
+  int opt;
+
+  size_t lines_to_print = 20;
+
+  while ((opt = getopt(argc, argv, "n:")) != -1) {
+    switch(opt) {
+      case 'n':
+        lines_to_print = strtol(optarg, NULL, 10);
+        break;
+      case '?':
+        print_error("Invalid switch '%s' has been provided\n", optarg);
+        break;
+    }
+  }
+
+  char *file_name = NULL;
+
+  if (argv[optind] != NULL) {
+    file_name = argv[optind];
+  }
+
   char line[LINE_LENGTH_LIMIT];
-
-  size_t lines_to_print = 0;
-
-  if (true) {
-    lines_to_print = 0;
-  } else {
-    lines_to_print = 0;
-  }
-
-  if (lines_to_print == 0) {
-    return 0;
-  }
 
   CircBuffer *buffer = cbuf_create(lines_to_print);
 
@@ -138,14 +143,12 @@ int main(const int argc, char *argv[]) {
     print_error("Buffer '*buffer' couldn't be allocated");
   }
 
-  if (argc == 1) {
+  if (file_name == NULL) { // stdin
     while (fgets(line, sizeof(line), stdin)) {
       cbuf_put(buffer, line);
     }
-  } else if (argc == 2) {
-    FILE *file;
-    const char *file_name = argv[1];
-    file = fopen(file_name, "r");
+  } else { // soubor
+    FILE *file = fopen(file_name, "r");
 
     if (file == NULL) {
       print_error("File '%s' couldn't be opened", file_name);
@@ -157,10 +160,6 @@ int main(const int argc, char *argv[]) {
     }
 
     fclose(file);
-
-  } else {
-    print_error("Invalid number of arguments!");
-    return 1;
   }
 
   size_t line_count = get_line_count(buffer);

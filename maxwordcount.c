@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "htab.h"
-
+#include <ctype.h>
 
 /*
 Počet bucketů v hashtablu by v ideálním případě neměl být nižší než počet ukládaných položek

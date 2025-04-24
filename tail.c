@@ -164,10 +164,20 @@ int main(const int argc, char *argv[]) {
   char line[LINE_LENGTH_LIMIT];
 
   if (file_name == NULL) { // stdin
+    bool long_line_warned = false;
+
     while (fgets(line, sizeof(line), stdin)) {
-      if (!limit_reached && strlen(line) == LINE_LENGTH_LIMIT - 1 && line[LINE_LENGTH_LIMIT - 2] != '\n') {
-        print_error("Line exceeded maximum length of %d characters\n", LINE_LENGTH_LIMIT - 1);
+      size_t len = strlen(line);
+
+      size_t length = strlen(line);
+      if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n' && !long_line_warned) {
+        print_error("chybicka\n");
+        long_line_warned = true;
       }
+
+      int ch;
+      while ((ch = fgetc(stdin)) != '\n' && ch != EOF);
+
       cbuf_put(buffer, line);
     }
   } else { // soubor
@@ -178,7 +188,18 @@ int main(const int argc, char *argv[]) {
       return 1;
     }
 
+    bool long_line_warned = false;
+
     while (fgets(line, sizeof(line), file)) {
+      size_t length = strlen(line);
+      if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n' && !long_line_warned) {
+        print_error("chybicka\n");
+        long_line_warned = true;
+      }
+
+      int ch;
+      while ((ch = fgetc(file)) != '\n' && ch != EOF);
+
       cbuf_put(buffer, line);
     }
 

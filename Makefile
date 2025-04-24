@@ -5,8 +5,9 @@ tail: tail.o
 
 
 CC = gcc
-CFLAGS = -O2 -Wall
+CFLAGS = -O2 -Wall -std=c11
 LDFLAGS = 
+PROGS = maxwordcount maxwordcount-dynamic tail
 
 LD_LIBRARY_PATH="."
 
@@ -17,6 +18,8 @@ CFLAGS += -fsanitize=address
 LDFLAGS += -fsanitize=address
 
 all:
+
+.PHONY:
 
 # Pˇr´ıklad: Program s knihovnou libtest.a
 # gcc -o program -static m1.c m2.c -L. -ltest
@@ -31,43 +34,41 @@ libhtab.a: htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o 
 
 libhtab.so:
 
-# all, phony
-
-clean:
-  rm -rf *.o *.so *.a maxwordcount maxwordcount-dynamic tail
-
 htab_bucket_count.o: htab_bucket_count.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_clear.o: htab_clear.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_erase.o: htab_erase.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_find.o: htab_find.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_for_each.o: htab_for_each.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_free.o: htab_free.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_hash_function.o: htab_hash_function.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_init.o: htab_init.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_lookup_add.o: htab_lookup_add.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 htab_size.o: htab_size.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 tail.o: tail.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 io.o: io.c
-	$(CC) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+clean:
+  rm -rf *.o *.so *.a $(PROGS)

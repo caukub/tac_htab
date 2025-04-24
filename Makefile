@@ -1,26 +1,30 @@
 gcc -O2 -o maxwordcount htab_bucket_count.c htab_hash_function.c htab_init.c htab_for_each.c htab_lookup_add.c htab_clear.c htab_free.c maxwordcount.c io.c
 
-gcc -O2 -o tail tail.c
+tail: tail.o
+	$(CC) $^ -o $@
 
 
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -O2 -Wall
 LDFLAGS = 
-LDFLAGS_DYNAMIC_LIBRARY = -shared
-
--O2
 
 LD_LIBRARY_PATH="."
-fpic
+
+-fPIC
+-shared
+
+CFLAGS += -fsanitize=address
+LDFLAGS += -fsanitize=address
 
 all:
 
-tail: tail.o
-	$(CC) -o $@
-	$(CC) $^ -o $@
-
+# Pˇr´ıklad: Program s knihovnou libtest.a
+# gcc -o program -static m1.c m2.c -L. -ltest
 maxwordcount: libhtab.a
+	$(CC) -o $@
 
+# Pˇr´ıklad: Program s knihovnou libtest.so
+# gcc -o program m1.c m2.c -L. -ltest
 maxwordcount-dynamic:
 
 libhtab.a: htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o

@@ -1,3 +1,28 @@
 gcc -O2 -o maxwordcount htab_bucket_count.c htab_hash_function.c htab_init.c htab_for_each.c htab_lookup_add.c htab_clear.c htab_free.c maxwordcount.c io.c
 
 gcc -O2 -o tail tail.c
+
+
+CC = gcc
+CFLAGS = -Wall
+LDFLAGS = 
+LDFLAGS_DYNAMIC_LIBRARY = -shared
+
+LD_LIBRARY_PATH="."
+
+tail:
+
+maxwordcount:
+
+maxwordcount-dynamic:
+
+libhtab.a:
+
+libhtab.so:
+
+io.o: io.c
+
+# all, phony
+
+clean:
+  rm -rf *.o *.so *.a wordcount wordcount-dynamic tail

@@ -11,10 +11,13 @@ LDFLAGS_DYNAMIC_LIBRARY = -shared
 -O2
 
 LD_LIBRARY_PATH="."
+fpic
 
 all:
 
-tail:
+tail: tail.o
+	$(CC) -o $@
+	$(CC) $^ -o $@
 
 maxwordcount: libhtab.a
 

@@ -2,14 +2,30 @@
 #include "htab.h"
 
 #include <stdio.h>
-#include <unistd.h>
+
+#define HASH_TABLE_SIZE 30000
+
+unsigned max_words = 0;
+
+void calc_max_words(htab_pair_t *pair) {
+    if (pair->value > max_words) {
+        max_words = pair->value;
+    }
+}
+
+void print_max_words(htab_pair_t *pair) {
+    if (pair->value == max_words) {
+        printf("%s\t%d\n", pair->key, pair->value);
+    }
+}
 
 void add(htab_t *hash_table, htab_key_t key) {
     htab_pair_t *pair = htab_lookup_add(hash_table, key);
     pair->value += 1;
 }
+
 int main(const int argc, const char *argv[]) {
-    htab_t *hash_table = htab_init(3);
+    htab_t *hash_table = htab_init(HASH_TABLE_SIZE);
 
     FILE *file = fopen("ahoj.txt", "r");
 
@@ -26,8 +42,8 @@ int main(const int argc, const char *argv[]) {
 
     fclose(file);
 
-    htab_pair_t *pair = htab_lookup_add(hash_table, "all");
-    printf("%d\n", pair->value);
+    htab_for_each(hash_table, &calc_max_words);
+    htab_for_each(hash_table, &print_max_words);
 
     htab_free(hash_table);
 }

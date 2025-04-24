@@ -1,5 +1,8 @@
 #include <stdbool.h>
 
+#include "htab_t.h"
+#include "htab_item_t.h"
+
 bool htab_erase(htab_t *t, htab_key_t key) {
     size_t hash = htab_hash_function(key);
     size_t bucket_idx = (hash % htab_bucket_count(t));
@@ -12,7 +15,7 @@ bool htab_erase(htab_t *t, htab_key_t key) {
     while (current_item != NULL) {
         if (strcmp(current_item->pair.key, key) == 0) {
             if (previous_item == NULL) {
-                bucket_ptr = current_item->next;
+                t->buckets[bucket_idx] = current_item->next;
             } else {
                 previous_item->next = current_item->next;
             }

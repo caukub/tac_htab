@@ -1,2 +1,1 @@
-gcc -O2 -o a.out htab_bucket_count.c htab_hash_function.c htab_init.c htab_for_each.c htab_lookup_add.c htab_clear.c htab_
-free.c maxwordcount.c && ./a.out
+gcc -O2 -o a.out htab_bucket_count.c htab_hash_function.c htab_init.c htab_for_each.c htab_lookup_add.c htab_clear.c htab_free.c maxwordcount.c && ./a.out

@@ -1,10 +1,21 @@
+# Makefile
+# Řešení IJC-DU2, část A + B, 25. 4. 2025
+# Autor: Jakub Trumpeš (xtrumpj00), FIT
+# Přeloženo: gcc version 11.5.0 (GCC)
+
 CC = gcc
 CFLAGS = -O2 -Wall -std=c11 -fPIC
 PROGS = maxwordcount maxwordcount-dynamic tail
 
-MEOW = htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
+GENERATED-OBJECTS = htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
+
+.PHONY: all clean check check-types
+
+all: maxwordcount maxwordcount-dynamic tail
 
 export LD_LIBRARY_PATH="."
+
+# CFLAGS += -fsanitize=address
 
 maxwordcount: libhtab.a maxwordcount.o io.o
 	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -static -L. -lhtab
@@ -15,10 +26,10 @@ maxwordcount-dynamic: libhtab.so maxwordcount.o io.o
 tail: tail.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-libhtab.a: $(MEOW)
+libhtab.a: $(GENERATED-OBJECTS)
 	ar rcs $@ $^
 
-libhtab.so: $(MEOW)
+libhtab.so: $(GENERATED-OBJECTS)
 	$(CC) $(CFLAGS) -shared -fPIC $^ -o $@
 
 htab_bucket_count.o: htab_bucket_count.c
@@ -63,12 +74,5 @@ io.o: io.c
 clean:
 	rm -rf *.o *.so *.a $(PROGS)
 
-check:
+check-types:
 	file maxwordcount && file maxwordcount-dynamic
-
-# CFLAGS += -fsanitize=address
-# LDFLAGS += -fsanitize=address
-
-# all:
-
-# .PHONY:

@@ -10,7 +10,7 @@ maxwordcount: libhtab.a maxwordcount.o io.o
 	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -static -L. -lhtab
 
 maxwordcount-dynamic: libhtab.so maxwordcount.o io.o
-	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -shared -L. -lhtab
+	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ ./libhtab.so
 
 tail: tail.o
 	$(CC) $(CFLAGS) $^ -o $@
@@ -62,6 +62,9 @@ io.o: io.c
 
 clean:
 	rm -rf *.o *.so *.a $(PROGS)
+
+check:
+	file maxwordcount && file maxwordcount-dynamic
 
 # CFLAGS += -fsanitize=address
 # LDFLAGS += -fsanitize=address

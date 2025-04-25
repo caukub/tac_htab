@@ -38,7 +38,7 @@ void add_word(htab_t *hash_table, htab_key_t key) {
     pair->value += 1;
 }
 
-int main(const int argc, const char *argv[]) {
+int main(void) {
     htab_t *hash_table = htab_init(HASH_TABLE_SIZE);
 
     if (hash_table == NULL) {

@@ -2,28 +2,23 @@ CC = gcc
 CFLAGS = -O2 -Wall -std=c11 -fPIC
 PROGS = maxwordcount maxwordcount-dynamic tail
 
+MEOW = htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
+
 export LD_LIBRARY_PATH="."
-
-# CFLAGS += -fsanitize=address
-# LDFLAGS += -fsanitize=address
-
-# all:
-
-# .PHONY:
 
 maxwordcount: libhtab.a maxwordcount.o io.o
 	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -static -L. -lhtab
 
 maxwordcount-dynamic: libhtab.so maxwordcount.o io.o
-	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -shared -L. -lhtab
+	$(CC) $(CFLAGS) $(MEOW) maxwordcount.o io.o -o $@ -shared -L. -lhtab
 
 tail: tail.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-libhtab.a: htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
+libhtab.a: $(MEOW)
 	ar rcs $@ $^
 
-libhtab.so: htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
+libhtab.so: $(MEOW)
 	$(CC) $(CFLAGS) -shared -fPIC $^ -o $@
 
 htab_bucket_count.o: htab_bucket_count.c
@@ -67,3 +62,10 @@ io.o: io.c
 
 clean:
 	rm -rf *.o *.so *.a $(PROGS)
+
+# CFLAGS += -fsanitize=address
+# LDFLAGS += -fsanitize=address
+
+# all:
+
+# .PHONY:

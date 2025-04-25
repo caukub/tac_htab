@@ -10,7 +10,7 @@ maxwordcount: libhtab.a maxwordcount.o io.o
 	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -static -L. -lhtab
 
 maxwordcount-dynamic: libhtab.so maxwordcount.o io.o
-	$(CC) $(CFLAGS) $(MEOW) maxwordcount.o io.o -o $@ -shared -L. -lhtab
+	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -shared -L. -lhtab
 
 tail: tail.o
 	$(CC) $(CFLAGS) $^ -o $@

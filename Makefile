@@ -11,7 +11,7 @@ GENERATED-OBJECTS = htab_bucket_count.o htab_hash_function.o htab_init.o htab_fo
 
 .PHONY: all clean check check-types
 
-all: maxwordcount maxwordcount-dynamic tail
+all: libhtab.a libhtab.so maxwordcount maxwordcount-dynamic tail
 
 export LD_LIBRARY_PATH="."
 
@@ -73,6 +73,15 @@ io.o: io.c
 
 clean:
 	rm -rf *.o *.so *.a $(PROGS)
+
+check: maxwordcount maxwordcount-dynamic tail
+	chmod +x maxwordcount maxwordcount-dynamic tail
+	@echo "Testování maxwordcount"
+	echo "foo bar baz baz foo" | ./maxwordcount
+	@echo "Testování maxwordcount-dynamic"
+	echo "foo bar baz baz foo" | ./maxwordcount-dynamic
+	@echo "Testování tail"
+	printf "řádek 1\nřádek 2\nřádek 3\nřádek 4\nřádek 5\nřádek 6\nřádek 7\n" | ./tail -n 5
 
 check-types:
 	file maxwordcount && file maxwordcount-dynamic

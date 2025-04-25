@@ -1,14 +1,8 @@
 CC = gcc
-CFLAGS = -O2 -Wall -std=c11
-# LDFLAGS = 
+CFLAGS = -O2 -Wall -std=c11 -fPIC
 PROGS = maxwordcount maxwordcount-dynamic tail
 
-LD_LIBRARY_PATH="."
-
-# -fPIC
-# -shared
-
-# -static
+export LD_LIBRARY_PATH="."
 
 # CFLAGS += -fsanitize=address
 # LDFLAGS += -fsanitize=address
@@ -17,19 +11,20 @@ LD_LIBRARY_PATH="."
 
 # .PHONY:
 
-# 1) pˇreklad modul ˚u: cc -c moduly.c
-# 2) vytvoření knihovny ar parametry knihovna.a moduly.o
-# 3) gcc -o program -static m1.c m2.c -L. -ltest
-maxwordcount: libhtab.a
+maxwordcount: libhtab.a maxwordcount.o io.o
 	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -static -L. -lhtab
 
+maxwordcount-dynamic: libhtab.so maxwordcount.o io.o
+	$(CC) $(CFLAGS) maxwordcount.o io.o -o $@ -shared -L. -lhtab
+
 tail: tail.o
-	$(CC) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 libhtab.a: htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
 	ar rcs $@ $^
 
-libhtab.so:
+libhtab.so: htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o
+	$(CC) $(CFLAGS) -shared -fPIC $^ -o $@
 
 htab_bucket_count.o: htab_bucket_count.c
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -71,4 +66,4 @@ io.o: io.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 clean:
-  rm -rf *.o *.so *.a $(PROGS)
+	rm -rf *.o *.so *.a $(PROGS)

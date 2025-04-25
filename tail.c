@@ -41,7 +41,7 @@ CircBuffer* cbuf_create(size_t size) {
   CircBuffer *buffer = malloc(sizeof(CircBuffer));
 
   if (buffer == NULL) {
-    print_error("Memory allocation for '*buffer' failed");
+    print_error("Memory allocation for '*buffer' failed\n");
     return NULL;
   }
 
@@ -53,7 +53,7 @@ CircBuffer* cbuf_create(size_t size) {
   buffer->lines = malloc(sizeof(char*) * size);
 
   if (buffer->lines == NULL) {
-    print_error("Memory allocation for 'buffer->lines' failed");
+    print_error("Memory allocation for 'buffer->lines' failed\n");
     free(buffer);
     return NULL;
   }
@@ -68,7 +68,7 @@ void cbuf_put(CircBuffer *buffer, const char *line) {
 
   buffer->lines[buffer->write_idx] = strdup(line);
   if (!buffer->lines[buffer->write_idx]) {
-    print_error("Error occured while allocating memory for new line");
+    print_error("Error occured while allocating memory for new line\n");
     return;
   }
 
@@ -165,7 +165,8 @@ int main(const int argc, char *argv[]) {
   CircBuffer *buffer = cbuf_create(lines_to_print);
 
   if (buffer == NULL) {
-    print_error("Buffer '*buffer' couldn't be allocated");
+    print_error("Buffer '*buffer' allocation failed\n");
+    return 1;
   }
 
   char line[LINE_LENGTH_LIMIT];

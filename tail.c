@@ -101,11 +101,7 @@ char* cbuf_get(CircBuffer *buffer, int index) {
 
   size_t count = buffer->is_full ? buffer->size : buffer->write_idx - buffer->read_idx;
 
-  if (count < 0) {
-    count += buffer->size;
-  }
-
-  if (index < 0 || index >= count) {
+  if (index < 0 || (size_t) index >= count) {
     return NULL;
   }
 

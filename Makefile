@@ -4,7 +4,7 @@
 # Přeloženo: gcc version 11.5.0 (GCC)
 
 CC = gcc
-CFLAGS = -O2 -Wall -std=c11 -fPIC
+CFLAGS = -O2 -Wall -pedantic -Wextra -std=c11 -fPIC
 PROGS = maxwordcount maxwordcount-dynamic tail
 
 GENERATED-OBJECTS = htab_bucket_count.o htab_hash_function.o htab_init.o htab_for_each.o htab_lookup_add.o htab_clear.o htab_free.o maxwordcount.o io.o

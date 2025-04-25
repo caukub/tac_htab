@@ -67,8 +67,12 @@ void cbuf_put(CircBuffer *buffer, const char *line) {
   }
 
   buffer->lines[buffer->write_idx] = strdup(line);
+
   if (!buffer->lines[buffer->write_idx]) {
     print_error("Error occured while allocating memory for new line\n");
+    if (buffer->lines[buffer->write_idx] != NULL) {
+      free(buffer->lines[buffer->write_idx]);
+    }
     return;
   }
 
@@ -122,10 +126,62 @@ size_t get_line_count(CircBuffer * buffer) {
   }
 }
 
+void read_stdin(CircBuffer *buffer, char *line) {
+  bool line_limit_reached = false;
+  
+  while (fgets(line, LINE_LENGTH_LIMIT, stdin)) {
+    size_t length = strlen(line);
+    
+    if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
+      if (!line_limit_reached) {
+        print_error("Maximum line length (%d chars) exceeded, remaining of the line is not printed\n", LINE_LENGTH_LIMIT - 1);
+        line_limit_reached = true;
+      }
+
+      int ch;
+      
+      while ((ch = fgetc(stdin)) != '\n' && ch != EOF);
+    }
+
+    cbuf_put(buffer, line);
+  }
+}
+
+void read_file(CircBuffer *buffer, char *line, const char *file_name) {
+  FILE *file = fopen(file_name, "r");
+  
+  if (file == NULL) {
+    print_error("File '%s' couldn't be opened\n", file_name);
+    cbuf_free(buffer);
+    exit(1);
+  }
+  
+  bool line_limit_reached = false;
+  
+  while (fgets(line, LINE_LENGTH_LIMIT, file)) {
+    size_t length = strlen(line);
+
+    if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
+      if (!line_limit_reached) {
+        print_error("A line exceeded the maximum allowed length (%d chars), remaining of the line is not printed\n", LINE_LENGTH_LIMIT - 1);
+        line_limit_reached = true;
+      }
+
+      int ch;
+      while ((ch = fgetc(file)) != '\n' && ch != EOF);
+    }
+
+    cbuf_put(buffer, line);
+    
+    }
+    
+    fclose(file);
+}
+
 int main(const int argc, char *argv[]) {
   int opt;
 
-  size_t lines_to_print = 10;
+  int lines_to_print = 10;
 
   while ((opt = getopt(argc, argv, "n:")) != -1) {
     switch(opt) {
@@ -142,7 +198,7 @@ int main(const int argc, char *argv[]) {
         break;
       }
       case '?':
-        print_error("Invalid switch '%s' has been provided\n", optarg);
+        print_error("Invalid switch has been provided\n");
         exit(1);
         break;
     }
@@ -156,9 +212,12 @@ int main(const int argc, char *argv[]) {
 
   if (lines_to_print == 0) {
     return 0;
+  } else if (lines_to_print < 0) {
+    print_error("The number of lines to print cannot be negative\n");
+    return 1;
   }
 
-  CircBuffer *buffer = cbuf_create(lines_to_print);
+  CircBuffer *buffer = cbuf_create((size_t) lines_to_print);
 
   if (buffer == NULL) {
     print_error("Buffer '*buffer' allocation failed\n");
@@ -167,50 +226,10 @@ int main(const int argc, char *argv[]) {
 
   char line[LINE_LENGTH_LIMIT];
 
-  if (file_name == NULL) { // stdin
-    bool long_line_warned = false;
-
-    while (fgets(line, sizeof(line), stdin)) {
-      size_t length = strlen(line);
-      if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
-      if (!long_line_warned) {
-        print_error("A line exceeded the maximum allowed length (%d chars), remaining of the line is not printed\n", LINE_LENGTH_LIMIT - 1);
-        long_line_warned = 1;
-      }
-
-      int ch;
-      while ((ch = fgetc(stdin)) != '\n' && ch != EOF);
-    }
-
-    cbuf_put(buffer, line);
-    }
-  } else { // soubor
-    FILE *file = fopen(file_name, "r");
-
-    if (file == NULL) {
-      print_error("File '%s' couldn't be opened", file_name);
-      return 1;
-    }
-
-    bool long_line_warned = false;
-
-    while (fgets(line, sizeof(line), file)) {
-      size_t length = strlen(line);
-
-    if (length == LINE_LENGTH_LIMIT - 1 && line[length - 1] != '\n') {
-      if (!long_line_warned) {
-        print_error("A line exceeded the maximum allowed length (%d chars), remaining of the line is not printed\n", LINE_LENGTH_LIMIT - 1);
-        long_line_warned = 1;
-      }
-
-      int ch;
-      while ((ch = fgetc(file)) != '\n' && ch != EOF);
-    }
-
-    cbuf_put(buffer, line);
-  }
-
-    fclose(file);
+  if (file_name == NULL) {
+    read_stdin(buffer, line);
+  } else {
+    read_file(buffer, line, file_name);
   }
 
   size_t line_count = get_line_count(buffer);

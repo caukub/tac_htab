@@ -1,6 +1,6 @@
 // tail.c
-// Řešení IJC-DU2, část A, 25. 4. 2025
-// Autor: Jakub Trumpeš (xtrumpj00), FIT
+// Řešení DU2, část A, 25. 4. 2025
+// Autor: caukub
 // Přeloženo: gcc version 11.5.0 (GCC)
 
 #define _POSIX_C_SOURCE 200809L

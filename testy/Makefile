@@ -33,5 +33,5 @@ clean:
 	@rm -f io-test *.o
 
 zip:
-	@zip -r IJC2025_tests_marocc.zip $(scripts) $(test_dirs) Makefile
+	@zip -r redacted2025_tests_redacted.zip $(scripts) $(test_dirs) Makefile
 	

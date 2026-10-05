@@ -27,5 +27,5 @@ int main() {
     for (auto &mi: m)
         if(mi.second==max)  // tisk jen nejčetnějších slov
             cout << mi.first << "\t" << mi.second << "\n";
-            //      klíč/slovo          hodnota/počet
+            //   klíč/slovo          hodnota/počet
     }
